@@ -8,16 +8,47 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.metrics import roc_curve, auc
 
-# Load the training dataset from a txt using \t as separator
-df_train = pd.read_csv('A2-ring/A2-ring-merged.txt', sep='\t')
-X_train = df_train.iloc[:, :-1]
-y_train = df_train.iloc[:, -1]
+def load_dataset(n):
+    X_train = None
+    y_train = None
+    X_test = None
+    y_test = None
+    if n == 'ring':
+        # Load the training dataset from a txt using \t as separator
+        df_train = pd.read_csv('A2-ring/A2-ring-separable.txt', sep='\t')
+        X_train = df_train.iloc[:, :-1]
+        y_train = df_train.iloc[:, -1]
 
-# Load the test dataset
-df_test = pd.read_csv('A2-ring/A2-ring-test.txt', sep='\t')
-X_test = df_test.iloc[:, :-1]
-y_test = df_test.iloc[:, -1]
+        # Load the test dataset
+        df_test = pd.read_csv('A2-ring/A2-ring-test.txt', sep='\t')
+        X_test = df_test.iloc[:, :-1]
+        y_test = df_test.iloc[:, -1]
+    elif n == 'bank':
+        # Load the dataset
+        df = pd.read_csv('A2-bank/full.csv', sep=';')
+        X = df.drop('y', axis=1)
+        y = df['y']
 
+        # Split the dataset into training and test sets with a 80:20 ratio
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+        # Print 0 and 1 counts in y_train
+        print('y_train 0 count: ', np.count_nonzero(y_train == 0))
+        print('y_train 1 count: ', np.count_nonzero(y_train == 1))
+    elif n == '3':
+        # Load the training dataset from a txt using \t as separator
+        df_train = pd.read_csv('A2-3/A2-3-separable.txt', sep='\t')
+        X_train = df_train.iloc[:, :-1]
+        y_train = df_train.iloc[:, -1]
+
+        # Load the test dataset
+        df_test = pd.read_csv('A2-3/A2-3-test.txt', sep='\t')
+        X_test = df_test.iloc[:, :-1]
+        y_test = df_test.iloc[:, -1]
+
+    return X_train, y_train, X_test, y_test
+
+X_train, y_train, X_test, y_test = load_dataset('bank')
 # Define the Keras model
 model = Sequential()
 model.add(Dense(64, activation='relu', input_dim=X_train.shape[1]))
@@ -63,11 +94,18 @@ plt.colorbar()
 plt.show()
 
 # Plot PCA of predicted data
-pca = PCA(n_components=2)
+pca = PCA(n_components=64)
 X_pca = pca.fit_transform(X_test)
 plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y_pred)
 plt.title('PCA of predicted data')
 plt.show()
+
+# Compute classification error percentage
+error_rate = 100 * (cm[0, 1] + cm[1, 0]) / (cm[0, 0] + cm[0, 1] + cm[1, 0] + cm[1, 1])
+print('Error rate: ', error_rate)
+
+
+
 
 
 
