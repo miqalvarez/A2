@@ -31,16 +31,17 @@ print('y_train 1 count: ', np.count_nonzero(y_train == 1))
 
 # Define the parameter grid for GridSearchCV
 param_grid = {
-    'hidden_layer_sizes': [(100,), (50, 50), (50, 30, 20)],
-    'activation': ['relu', 'tanh', 'logistic'],
-    'alpha': [0.0001, 0.001, 0.01],
+    'hidden_layer_sizes': [(10,30,10),(20,)],
+    'activation': ['tanh', 'relu'],
+    'solver': ['sgd', 'adam'],
+    'alpha': [0.0001, 0.05],
+    'learning_rate': ['constant','adaptive'],
 }
-
 # Create the BP classifier
-bp = MLPClassifier(max_iter=1000)
+bp = MLPClassifier(max_iter=1)
 
 # Perform grid search with cross-validation to find the best parameters
-grid_search = GridSearchCV(bp, param_grid, cv=10, scoring='accuracy')
+grid_search = GridSearchCV(bp, param_grid, cv=3, n_jobs=-1)
 grid_search.fit(X_train, y_train)
 
 # Get the best parameters
