@@ -4,6 +4,8 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, auc
+
 '''
 # Load the dataset
 df = pd.read_csv('A2-bank/full.csv', sep=';')
@@ -15,7 +17,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 '''
 
 # Load the training dataset from a txt using \t as separator
-df_train = pd.read_csv('A2-ring/A2-ring-separable.txt', sep='\t')
+df_train = pd.read_csv('A2-ring/A2-ring-merged.txt', sep='\t')
 X_train = df_train.iloc[:, :-1]
 y_train = df_train.iloc[:, -1]
 
@@ -68,9 +70,17 @@ plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.show()
 
-# Compute and plot error rate
-error_rate = np.mean(y_pred != y_test)
-print('Error rate: ', error_rate)
+# Plot the ROC curve
+fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+roc_auc = auc(fpr, tpr)
+plt.figure()
+plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.3f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlabel('False positive rate')
+plt.ylabel('True positive rate')
+plt.title('ROC curve')
+plt.legend(loc="lower right")
+plt.show()
 
 # Plot PCA of predicted data
 from sklearn.decomposition import PCA
