@@ -12,7 +12,7 @@ def load_dataset(n):
     y_test = None
     if n == 'ring':
         # Load the training dataset from a txt using \t as separator
-        df_train = pd.read_csv('A2-ring/A2-ring-separable.txt', sep='\t')
+        df_train = pd.read_csv('A2-ring/A2-ring-merged.txt', sep='\t')
         X_train = df_train.iloc[:, :-1]
         y_train = df_train.iloc[:, -1]
 
@@ -41,11 +41,12 @@ def load_dataset(n):
 
     return X_train, y_train, X_test, y_test
 
-X_train, y_train, X_test, y_test = load_dataset('bank')
+X_train, y_train, X_test, y_test = load_dataset('ring')
 
 # Define the parameter grid for GridSearchCV
 param_grid = {'C': [0.1, 1, 10, 100],
-              'kernel': ['rbf', 'poly', 'sigmoid', 'linear']}
+              'kernel': ['rbf', 'poly', 'sigmoid', 'linear'],
+              'gamma': ['scale', 'auto']}
 
 # Create the SVM classifier with a different kernel
 svm = SVC()
@@ -59,7 +60,7 @@ best_params = grid_search.best_params_
 print(best_params)
 
 # Create a new SVM classifier with the best parameters
-svm = SVC(C=best_params['C'], kernel=best_params['kernel'], gamma='scale')
+svm = SVC(C=best_params['C'], kernel=best_params['kernel'], gamma=best_params['gamma'])
 
 # Fit the classifier to the training data
 svm.fit(X_train, y_train)
@@ -68,15 +69,15 @@ svm.fit(X_train, y_train)
 y_pred = svm.predict(X_test)
 
 # Plot the confusion matrix
-cm = confusion_matrix(y_test, y_pred)
-print(cm)
+#cm = confusion_matrix(y_test, y_pred)
+#print(cm)
 
-plt.matshow(cm)
-plt.title('Confusion matrix')
-plt.colorbar()
-plt.ylabel('True label')
-plt.xlabel('Predicted label')
-plt.show()
+#plt.matshow(cm)
+#plt.title('Confusion matrix')
+#plt.colorbar()
+#plt.ylabel('True label')
+#plt.xlabel('Predicted label')
+#plt.show()
 
 # Plot PCA of predicted data
 from sklearn.decomposition import PCA

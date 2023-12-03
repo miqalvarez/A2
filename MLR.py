@@ -15,12 +15,12 @@ def load_dataset(n):
     y_test = None
     if n == 'ring':
         # Load the training dataset from a txt using \t as separator
-        df_train = pd.read_csv('A2-ring/A2-ring-merged.txt', sep='\t')
+        df_train = pd.read_csv('A2-ring/A2-ring-separable.csv', sep=',')
         X_train = df_train.iloc[:, :-1]
         y_train = df_train.iloc[:, -1]
 
         # Load the test dataset
-        df_test = pd.read_csv('A2-ring/A2-ring-test.txt', sep='\t')
+        df_test = pd.read_csv('A2-ring/A2-ring-test.csv', sep=',')
         X_test = df_test.iloc[:, :-1]
         y_test = df_test.iloc[:, -1]
     elif n == 'bank':

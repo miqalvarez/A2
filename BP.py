@@ -7,6 +7,8 @@ from tensorflow.keras.layers import Dense
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.metrics import roc_curve, auc
+from sklearn.model_selection import StratifiedKFold
+import tensorflow as tf
 from sklearn.preprocessing import label_binarize
 from itertools import cycle
 
@@ -17,7 +19,7 @@ def load_dataset(n):
     y_test = None
     if n == 'ring':
         # Load the training dataset from a txt using \t as separator
-        df_train = pd.read_csv('A2-ring/A2-ring-separable.txt', sep='\t')
+        df_train = pd.read_csv('A2-ring/A2-ring-merged.txt', sep='\t')
         X_train = df_train.iloc[:, :-1]
         y_train = df_train.iloc[:, -1]
 
@@ -45,7 +47,6 @@ def load_dataset(n):
         # Split the dataset into training and test sets with a 80:20 ratio
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-
     return X_train, y_train, X_test, y_test
 
 X_train, y_train, X_test, y_test = load_dataset('ring')
@@ -69,10 +70,10 @@ for train_index, val_index in skf.split(X_train, y_train):
     X_train_fold, X_val_fold = X_train.iloc[train_index], X_train.iloc[val_index]
     y_train_fold, y_val_fold = y_train.iloc[train_index], y_train.iloc[val_index]
 
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     
     # Train the model
-    history = model.fit(X_train_fold, y_train_fold, epochs=100, batch_size=32, validation_data=(X_val_fold, y_val_fold))
+    history = model.fit(X_train_fold, y_train_fold, epochs=50, batch_size=32, validation_data=(X_val_fold, y_val_fold))
 
 # Evaluate the model on the test set
 loss, accuracy = model.evaluate(X_test, y_test)
@@ -130,7 +131,7 @@ plt.show()
 
 # Plot PCA of predicted data
 from sklearn.decomposition import PCA
-pca = PCA(n_components=2)
+pca = PCA(n_components=3)
 X_pca = pca.fit_transform(X_test)
 plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y_pred)
 plt.title('PCA of predicted data')
