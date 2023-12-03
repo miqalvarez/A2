@@ -32,23 +32,21 @@ def load_dataset(n):
         # Split the dataset into training and test sets with a 80:20 ratio
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-        # Print 0 and 1 counts in y_train
-        print('y_train 0 count: ', np.count_nonzero(y_train == 0))
-        print('y_train 1 count: ', np.count_nonzero(y_train == 1))
-    elif n == '3':
+    elif n == 'star':
         # Load the training dataset from a txt using \t as separator
-        df_train = pd.read_csv('A2-3/A2-3-separable.txt', sep='\t')
-        X_train = df_train.iloc[:, :-1]
-        y_train = df_train.iloc[:, -1]
+        df_train = pd.read_csv('Star\star.csv', sep=',')
+        X = df_train.iloc[:, :-1]
+        y = df_train.iloc[:, -1]
+        
+        # Split the dataset into training and test sets with a 80:20 ratio
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-        # Load the test dataset
-        df_test = pd.read_csv('A2-3/A2-3-test.txt', sep='\t')
-        X_test = df_test.iloc[:, :-1]
-        y_test = df_test.iloc[:, -1]
 
     return X_train, y_train, X_test, y_test
 
-X_train, y_train, X_test, y_test = load_dataset('bank')
+X_train, y_train, X_test, y_test = load_dataset('star')
+n_classes = len(np.unique(y_train))
+
 # Define the Keras model
 model = Sequential()
 model.add(Dense(64, activation='relu', input_dim=X_train.shape[1]))
@@ -70,17 +68,26 @@ print('Test accuracy:', accuracy)
 y_pred = model.predict(X_test)
 y_pred = np.round(y_pred)
 
-# Plot the ROC curve
-fpr, tpr, thresholds = roc_curve(y_test, y_pred)
-roc_auc = auc(fpr, tpr)
+# Compute ROC curve and AUC for each class
+fpr = dict()
+tpr = dict()
+roc_auc = dict()
+for i in range(n_classes):
+    fpr[i], tpr[i], _ = roc_curve(y_test.iloc[:, i], y_pred.iloc[:, i])
+    roc_auc[i] = auc(fpr[i], tpr[i])
+
+
+# Plot ROC curve
 plt.figure()
-plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.3f)' % roc_auc)
-plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+lw = 2
+for i in range(n_classes):
+    plt.plot(fpr[i], tpr[i], lw=lw, label='ROC curve (area = %0.2f)' % roc_auc[i])
 plt.xlabel('False positive rate')
 plt.ylabel('True positive rate')
 plt.title('ROC curve')
-plt.legend(loc="lower right")
+plt.legend(loc='lower right')
 plt.show()
+
 
 # Plot the confusion matrix
 cm = confusion_matrix(y_test, y_pred)
@@ -103,7 +110,6 @@ plt.show()
 # Compute classification error percentage
 error_rate = 100 * (cm[0, 1] + cm[1, 0]) / (cm[0, 0] + cm[0, 1] + cm[1, 0] + cm[1, 1])
 print('Error rate: ', error_rate)
-
 
 
 
