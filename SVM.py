@@ -41,7 +41,7 @@ def load_dataset(n):
 
     return X_train, y_train, X_test, y_test
 
-X_train, y_train, X_test, y_test = load_dataset('star')
+X_train, y_train, X_test, y_test = load_dataset('bank')
 
 # Define the parameter grid for GridSearchCV
 param_grid = {'C': [0.1, 1, 10, 100],
