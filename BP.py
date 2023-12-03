@@ -62,13 +62,19 @@ model.add(Dense(64, activation='relu', input_dim=X_train.shape[1]))
 model.add(Dense(32, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 
-# Compile the model
-model.compile(optimizer='adam', metrics=['accuracy'], loss='binary_crossentropy')
+# Compile the model using cross-validation of 10
+skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
 
-# Train the model
-history = model.fit(X_train, y_train, epochs=10)
+for train_index, val_index in skf.split(X_train, y_train):
+    X_train_fold, X_val_fold = X_train.iloc[train_index], X_train.iloc[val_index]
+    y_train_fold, y_val_fold = y_train.iloc[train_index], y_train.iloc[val_index]
 
-# Evaluate the model
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    
+    # Train the model
+    history = model.fit(X_train_fold, y_train_fold, epochs=100, batch_size=32, validation_data=(X_val_fold, y_val_fold))
+
+# Evaluate the model on the test set
 loss, accuracy = model.evaluate(X_test, y_test)
 print('Test loss:', loss)
 print('Test accuracy:', accuracy)

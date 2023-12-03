@@ -50,8 +50,7 @@ n_classes = len(np.unique(y_train))
 # Define the parameter grid for GridSearchCV
 param_grid = {'C': [0.1, 1, 10, 100],
               'penalty': ['l1', 'l2'],
-              'solver': ['liblinear', 'saga'],
-              'max_iter': [1]}
+              'solver': ['liblinear', 'saga']}
 
 # Create the Logistic Regression classifier
 lr = LogisticRegression()
