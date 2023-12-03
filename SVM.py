@@ -41,12 +41,11 @@ def load_dataset(n):
 
     return X_train, y_train, X_test, y_test
 
-X_train, y_train, X_test, y_test = load_dataset('bank')
+X_train, y_train, X_test, y_test = load_dataset('ring')
 
 # Define the parameter grid for GridSearchCV
 param_grid = {'C': [0.1, 1, 10, 100],
-              'kernel': ['rbf', 'poly', 'sigmoid', 'linear'],
-              'max_iter': [100]}
+              'kernel': ['rbf', 'poly', 'sigmoid', 'linear']}
 
 # Create the SVM classifier with a different kernel
 svm = SVC()
@@ -60,7 +59,7 @@ best_params = grid_search.best_params_
 print(best_params)
 
 # Create a new SVM classifier with the best parameters
-svm = SVC(C=best_params['C'], kernel=best_params['kernel'])
+svm = SVC(C=best_params['C'], kernel=best_params['kernel'], gamma='scale')
 
 # Fit the classifier to the training data
 svm.fit(X_train, y_train)
@@ -81,12 +80,21 @@ plt.show()
 
 # Plot PCA of predicted data
 from sklearn.decomposition import PCA
-pca = PCA(n_components=3)
+pca = PCA(n_components=2)
 X_pca = pca.fit_transform(X_test)
 plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y_pred)
 plt.title('PCA of predicted data')
 plt.show()
 
-# Compute classification error percentage
-error_rate = 100 * (cm[0, 1] + cm[1, 0]) / (cm[0, 0] + cm[0, 1] + cm[1, 0] + cm[1, 1])
+# For binary classification, handle the case where the confusion matrix is a 2x2 matrix
+if cm.shape == (2, 2):
+    # Compute classification error percentage
+    error_rate = 100 * (cm[0, 1] + cm[1, 0]) / (cm[0, 0] + cm[0, 1] + cm[1, 0] + cm[1, 1])
+
+elif cm.shape == (3, 3):
+    # Compute classification error percentage
+    error_rate = 100 * (cm[0, 1] + cm[0, 2] + cm[1, 0] + cm[1, 2] + cm[2, 0] + cm[2, 1]) / (
+                cm[0, 0] + cm[0, 1] + cm[0, 2] + cm[1, 0] + cm[1, 1] + cm[1, 2] + cm[2, 0] + cm[2, 1] + cm[2, 2])
+    
+
 print('Error rate: ', error_rate)
