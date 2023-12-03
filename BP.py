@@ -49,10 +49,8 @@ def load_dataset(n):
 
     return X_train, y_train, X_test, y_test
 
+
 X_train, y_train, X_test, y_test = load_dataset('ring')
-
-
-
 print(f"X_train type: {type(X_train)}, shape: {X_train.shape}")
 print(f"y_train type: {type(y_train)}, shape: {y_train.shape}")
 n_classes = len(np.unique(y_train))
